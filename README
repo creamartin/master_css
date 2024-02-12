@@ -5,3 +5,12 @@ Computational Social Systems,
 RWTH Aachen
 Title: "Game Changes: A Data-Driven Exploration of Team Design and Network Effects in Board Game Innovation"
 
+ROADMAP
+Statistics
+
+RHEM
+RHOM + OLS
+    • Novelty
+    • Usefulness
+
+[RUN COMMAND] java -jar ../eventnet.hyper-0.5.jar bgg.config.xml
