@@ -83,13 +83,15 @@ names <- c(
 )
 print(
   screenreg(
+    file = "coxph.csv",
     models,
     single.row = TRUE,
     digits = 2, stars = c(0.001, 0.01, 0.05, 0.1),
     custom.model.names = names,
     include.rsquared = FALSE,
     include.maxrs = FALSE,
-    include.missings = FALSE,
+    include.missings = TRUE,
     include.zph = FALSE
   )
 )
+
