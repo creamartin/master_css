@@ -1,0 +1,170 @@
+<?xml version="1.0" ?>
+<eventnet.configuration name="eventnet.configuration" version="1.1">
+  <input.files accept=".csv" has.header="true" delimiter="COMMA" quote.char="DOUBLEQUOTE">
+    <input.directory name="/Users/martin/Documents/__thesis/__analysis/bgg/bgg_data"/>
+    <file name="bgg_two_mode_novelty.csv"/>
+    <file name="bgg_two_mode_rating.csv"/>
+  </input.files>
+  <output.directory name="/Users/martin/Documents/__thesis/__analysis/bgg/eventnet_data"/>
+  <event.components>
+    <component name="SOURCE" column.name="designer"/>
+    <component name="TARGET" column.name="mechanic"/>
+    <component name="TIME" column.name="year"/>
+    <component name="TYPE" column.name="event"/>
+    <component name="WEIGHT" column.name="weight"/>
+    <component name="EVENT_INTERVAL_ID" column.name="bgg_id"/>
+  </event.components>
+  <network.mode is.multimode="true" number.of.modes="2">
+    <node.set index="0" name="designer"/>
+    <node.set index="1" name="mechanic"/>
+  </network.mode>
+  <event.types>
+    <type name="add_designer" implied="false" admits.loops="true" source.node.set="designer" target.node.set="designer"/>
+    <type name="game" implied="false" admits.loops="false" source.node.set="designer" target.node.set="mechanic"/>
+    <type name="add_gender" implied="false" admits.loops="true" source.node.set="designer" target.node.set="designer"/>
+    <type name="add_mechanic" implied="false" admits.loops="true" source.node.set="mechanic" target.node.set="mechanic"/>
+  </event.types>
+  <time time.format.type="INTEGER" interval.type="TIME" time.unit="1"/>
+  <attribute name="designer_at_risk" class="NODE_LEVEL" type="DEFAULT_NODE_LEVEL_ATTRIBUTE" description="">
+    <attr.update type="SET_VALUE_TO"/>
+    <event.response event.type="add_designer" direction="OUT"/>
+  </attribute>
+  <attribute name="timepoint_at_risk" class="NODE_LEVEL" type="DEFAULT_NODE_LEVEL_ATTRIBUTE" description="">
+    <attr.update type="SET_VALUE_TO"/>
+    <event.response event.type="add_designer" time.scale.type="TIME" direction="OUT"/>
+  </attribute>
+  <attribute name="mechanic_at_risk" class="NODE_LEVEL" type="DEFAULT_NODE_LEVEL_ATTRIBUTE" description="">
+    <attr.update type="SET_VALUE_TO"/>
+    <event.response event.type="add_mechanic" direction="IN"/>
+  </attribute>
+  <attribute name="is_man" class="NODE_LEVEL" type="DEFAULT_NODE_LEVEL_ATTRIBUTE" description="">
+    <attr.update type="SET_VALUE_TO"/>
+    <event.response event.type="add_gender" direction="OUT"/>
+  </attribute>
+
+  <attribute name="prior_events" class="DIR_HYPER_LEVEL" type="DEFAULT_DHE_ATTRIBUTE" description="">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_events_dyadic" class="DYAD_LEVEL" type="DYAD_LEVEL_ATTRIBUTE_FROM_DHE" description="">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_teams_dyadic" class="DYAD_LEVEL" type="DYAD_LEVEL_ATTRIBUTE_FROM_DHE" description="" endpoint="SOURCE">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_mechanics_dyadic" class="DYAD_LEVEL" type="DYAD_LEVEL_ATTRIBUTE_FROM_DHE" description="" endpoint="SOURCE">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_teams" class="UNDIR_HYPER_LEVEL" type="DEFAULT_UHE_ATTRIBUTE" description="" endpoint="SOURCE">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_mechanics" class="UNDIR_HYPER_LEVEL" type="DEFAULT_UHE_ATTRIBUTE" description="" endpoint="TARGET">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game">
+      <function type="CONSTANT" parameter="1.0"/>
+    </event.response>
+  </attribute>
+  <attribute name="prior_performance" class="UNDIR_HYPER_LEVEL" type="DEFAULT_UHE_ATTRIBUTE" description="" endpoint="SOURCE">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game"/>
+  </attribute>
+  <attribute name="prior_performance_individual" class="UNDIR_HYPER_LEVEL" type="UHE_P_DEGREE_ATTRIBUTE" description="" hyperedge.size="1" endpoint="SOURCE">
+    <attr.update type="INCREMENT_VALUE_BY"/>
+    <event.response event.type="game"/>
+  </attribute>
+  <statistic name="team_exact_repetition" type="DHE_REPETITION_STAT" hyperedge.attr.name.1="prior_teams" endpoint="SOURCE"/>
+  <statistic name="mechanics_exact_repetition" type="DHE_REPETITION_STAT" hyperedge.attr.name.1="prior_mechanics" endpoint="TARGET"/>
+  <statistic name="team_closure" type="DHE_CLOSURE_STAT" dyad.attr.name.1="prior_teams_dyadic" direction.1="SYM" dyad.attr.name.2="prior_teams_dyadic" direction.2="SYM" endpoint="SOURCE"/>
+  <statistic name="mechanic_closure" type="DHE_CLOSURE_STAT" dyad.attr.name.1="prior_mechanics_dyadic" direction.1="SYM" dyad.attr.name.2="prior_mechanics_dyadic" direction.2="SYM" endpoint="TARGET"/>
+
+  <statistic name="exact_repetition" type="DHE_REPETITION_STAT" hyperedge.attr.name.1="prior_events"/>
+  <statistic name="team_mechanic_closure" type="DHE_CLOSURE_STAT" dyad.attr.name.1="prior_events_dyadic" direction.1="SYM" dyad.attr.name.2="prior_events_dyadic" direction.2="SYM"/>
+
+
+  <statistic name="team_size" type="DHE_SIZE_STAT" endpoint="SOURCE"/>
+  <statistic name="cum_performance_exact" type="DHE_REPETITION_STAT" hyperedge.attr.name.1="prior_performance" endpoint="SOURCE"/>
+
+  <statistic name="team_sub_rep_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="1" target.size="0"/>
+  <statistic name="team_sub_rep_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="2" target.size="0"/>
+  <statistic name="team_sub_rep_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="3" target.size="0"/>
+  <statistic name="team_sub_rep_4" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="4" target.size="0"/>
+  <statistic name="gender_avg" type="DHE_NODE_STAT" node.attr.name.1="is_man" na.value="0.0" endpoint="SOURCE">
+    <aggregation.function type="AVERAGE"/>
+  </statistic>
+  <statistic name="gender_disparity" type="DHE_NODE_STAT" node.attr.name.1="is_man" na.value="0.0" endpoint="SOURCE">
+    <aggregation.function type="CATDIFF"/>
+  </statistic>
+  <statistic name="tenure_avg" type="DHE_NODE_STAT" node.attr.name.1="timepoint_at_risk" na.value="0.0" endpoint="SOURCE">
+    <aggregation.function type="AVERAGE"/>
+  </statistic>
+  <statistic name="tenure_disparity" type="DHE_NODE_STAT" node.attr.name.1="timepoint_at_risk" na.value="0.0" endpoint="SOURCE">
+    <aggregation.function type="ABSDIFF"/>
+  </statistic>
+
+  <statistic name="mechanic_size" type="DHE_SIZE_STAT" endpoint="TARGET"/>
+  <statistic name="mechanic_sub_rep_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="0" target.size="1"/>
+  <statistic name="mechanic_sub_rep_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="0" target.size="2"/>
+  <statistic name="mechanic_sub_rep_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="0" target.size="3"/>
+  <statistic name="mechanic_sub_rep_4" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="0" target.size="4"/>
+  <statistic name="mechanic_sub_rep_5" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="0" target.size="5"/>
+  <statistic name="team_mechanic_sub_rep_1_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="1" target.size="1"/>
+  <statistic name="team_mechanic_sub_rep_1_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="1" target.size="2"/>
+  <statistic name="team_mechanic_sub_rep_1_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="1" target.size="3"/>
+  <statistic name="team_mechanic_sub_rep_2_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="2" target.size="1"/>
+  <statistic name="team_mechanic_sub_rep_2_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="2" target.size="2"/>
+  <statistic name="team_mechanic_sub_rep_2_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="2" target.size="3"/>
+  <statistic name="team_mechanic_sub_rep_3_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="3" target.size="1"/>
+  <statistic name="team_mechanic_sub_rep_3_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="3" target.size="2"/>
+  <statistic name="team_mechanic_sub_rep_3_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="3" target.size="3"/>
+  <statistic name="portfolio_size_heterogeneity" type="DHE_NEIGHBOR_STAT" dyad.attr.name.1="prior_events_dyadic" direction.1="OUT" endpoint="TARGET">
+    <aggregation.function type="SDEV"/>
+  </statistic>
+  <statistic name="portfolio_size_avg" type="DHE_NEIGHBOR_STAT" dyad.attr.name.1="prior_events_dyadic" direction.1="OUT" endpoint="TARGET">
+    <aggregation.function type="AVERAGE"/>
+  </statistic>
+  <statistic name="team_sub_rep_cum_1" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="1" target.size="0">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="team_sub_rep_cum_2" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="2" target.size="0">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="team_sub_rep_cum_3" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="3" target.size="0">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="team_sub_rep_cum_4" type="DHE_SUB_REPETITION_STAT" direction.1="OUT" hyperedge.attr.name.1="prior_events" source.size="4" target.size="0">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="cum_performance_1" type="DHE_SUB_REPETITION_STAT" direction.1="SYM" hyperedge.attr.name.1="prior_performance" source.size="1" endpoint="SOURCE">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="cum_performance_2" type="DHE_SUB_REPETITION_STAT" direction.1="SYM" hyperedge.attr.name.1="prior_performance" source.size="2" endpoint="SOURCE">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="cum_performance_3" type="DHE_SUB_REPETITION_STAT" direction.1="SYM" hyperedge.attr.name.1="prior_performance" source.size="3" endpoint="SOURCE">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="cum_performance_4" type="DHE_SUB_REPETITION_STAT" direction.1="SYM" hyperedge.attr.name.1="prior_performance" source.size="4" endpoint="SOURCE">
+    <aggregation.function type="SUM"/>
+  </statistic>
+  <statistic name="performance_disparity" type="DHE_SUB_REPETITION_STAT" direction.1="SYM" hyperedge.attr.name.1="prior_performance_individual" source.size="1" endpoint="SOURCE">
+  <aggregation.function type="ABSDIFF"/>
+  </statistic>
+
+  <observation name="COND_SIZE_DHE" type="COND_SIZE_DHE_OBS" exclude.loops="true" apply.case.control.sampling="true" number.of.non.events="10" non.events.are.per.observed.event="true" source.node.set="designer" target.node.set="mechanic" source.is.non.zero.on.attr="designer_at_risk" target.is.non.zero.on.attr="mechanic_at_risk">
+    <consider.event.type name="game"/>
+  </observation>
+</eventnet.configuration>
