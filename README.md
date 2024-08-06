@@ -4,6 +4,8 @@
 **Degree Program:** M.Sc. in Computational Social Systems  
 **Institution:** RWTH Aachen
 
+- [Full text - PDF Master Thesis](https://github.com/creamartin/master_css/blob/master/CSS_Master_Thesis.pdf)
+
 ## Abstract
 
    >This master's thesis investigates the dynamics of team formation and creative success within the board game industry, utilizing data from BoardGameGeek. By applying the novel Relational Hyper Event Model (RHEM) and Relational Hyper Event Outcome Model (RHOM), we identify key factors influencing collaboration and their impact on creative outcomes. The analysis reveals that prior collaborations and tenure similarity significantly drive team formation, while prior success and diverse mechanical experience correlate with higher creative performance. High-creativity teams are larger, exhibit more skill-related diversity, and have greater mechanical experience. These findings underscore the importance of balancing familiarity and diversity to foster innovation. Methodological insights and future research directions are discussed, highlighting the potential of RHEM and RHOM in practical research contexts.
@@ -99,4 +101,5 @@ This repository contains the data and scripts used for the M.Sc. thesis titled "
 
 - [Eventnet Software Documentation](https://github.com/juergenlerner/eventnet)
 - [Board Game Geek Data](https://boardgamegeek.com/)
+
 
